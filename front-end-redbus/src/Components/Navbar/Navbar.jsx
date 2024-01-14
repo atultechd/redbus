@@ -1,26 +1,31 @@
-import React from "react";
+import React, { useEffect } from "react";
 import styles from "./Navbar.module.css";
 import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import { RiArrowDropDownLine } from "react-icons/ri";
 import { MdAccountCircle } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { GoogleLogin } from "react-google-login";
 import { useSelector, useDispatch } from "react-redux";
 import {
   loginSuccess,
   loginFailure,
-  logout,
+  Logout,
   addCustomerMongo,
 } from "../../Redux/auth/actions";
 import ComingSoonModal from "../../Elements/ComingSoonModal";
 import { useHistory } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 const Navbar = () => {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [anchorEl2, setAnchorEl2] = React.useState(null);
   const [isModelOpen, setIsModelOpen] = React.useState(false);
   const dispatch = useDispatch();
   const isLoggedIn = useSelector((state) => state.authReducer.isLoggedIn);
+   
+
+
+  const {loginWithRedirect, logout, isAuthenticated, user} = useAuth0();
+
   const currentCustomer = useSelector(
     (state) => state.authReducer.currentCustomer
   );
@@ -29,10 +34,15 @@ const Navbar = () => {
   };
   console.log("Here: ", isLoggedIn, currentCustomer);
   const history = useHistory();
+
+  //logout
+ 
   const handleLogout = () => {
-    dispatch(logout());
+    logout({returnTo: window.location.origin})
+    dispatch(Logout());
     history.push("/");
   };
+
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -47,6 +57,30 @@ const Navbar = () => {
   const handleClose2 = () => {
     setAnchorEl2(null);
   };
+  const signIn = () =>{
+    loginWithRedirect()
+  }
+
+  useEffect(()=>{
+    if(isAuthenticated){
+      dispatch(loginSuccess(user));
+      dispatch(addCustomerMongo(user));
+      console.log(user)
+    }
+     else {
+      dispatch(loginFailure(false));
+      console.log("error")
+     }
+  }, [isAuthenticated, user, dispatch])
+
+  // useEffect(()=>{
+  //   if(isAuthenticated){
+  //     console.log(user.sub)
+  //   }
+  //    else {
+  //     console.log("error")
+  //    }
+  // }, [isAuthenticated])
 
   return (
     <div className={styles.Navbar}>
@@ -159,23 +193,10 @@ const Navbar = () => {
                   open={Boolean(anchorEl2)}
                   onClose={handleClose2}
                 >
-                  <MenuItem onClick={handleClose2}>
-                    <GoogleLogin
-                      // clientId="493530183469-naj3i844vuh8ru5usav057k5kuabc3iq.apps.googleusercontent.com"
-                      clientId="446362734274-cq1j14nuk3ov3elpe64dbnosinakaoof.apps.googleusercontent.com"
-                      onSuccess={(response) => {
-                        console.log(
-                          "---------------------------CALLED-------------------------------"
-                        );
-                        dispatch(loginSuccess(response));
-                        dispatch(addCustomerMongo(response.profileObj));
-                      }}
-                      onFailure={(response) => {
-                        dispatch(loginFailure(response));
-                      }}
-                      cookiePolicy={"single_host_origin"}
-                    />
-                  </MenuItem>
+                  <MenuItem onClick={()=>{
+                    handleClose2(); 
+                    signIn()
+                  }}>SignIn</MenuItem>
                 </Menu>
               )}
             </div>

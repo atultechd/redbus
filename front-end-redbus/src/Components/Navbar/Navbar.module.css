@@ -25,9 +25,9 @@ body {
   text-decoration: none;
   color: white;
 }
-.Navbar > * {
-  /* display: inline-block; */
-}
+/* .Navbar > * {
+  display: inline-block;
+} */
 
 .Navbar__listOne {
   list-style: none;

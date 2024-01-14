@@ -3,7 +3,7 @@ import axios from "axios";
 const loginSuccess = (response) => {
   return {
     type: actionTypes.LOGIN_SUCCESS,
-    payload: response.profileObj,
+    payload: response,
   };
 };
 
@@ -14,7 +14,7 @@ const loginFailure = (response) => {
   };
 };
 
-const logout = () => {
+const Logout = () => {
   return {
     type: actionTypes.LOGOUT,
   };
@@ -44,8 +44,8 @@ const addCustomerMongo = (profileObj) => {
       let customer = {
         name: profileObj.name,
         email: profileObj.email,
-        googleId: profileObj.googleId,
-        profilePicture: profileObj.imageUrl,
+        googleId: profileObj.sub,
+        profilePicture: profileObj.picture,
       };
       const res = await axios.post(
         `${process.env.REACT_APP_BACKEND_URL}/v1/api/customers`,
@@ -59,4 +59,4 @@ const addCustomerMongo = (profileObj) => {
     }
   };
 };
-export { loginSuccess, loginFailure, logout, addCustomerMongo };
+export { loginSuccess, loginFailure, Logout, addCustomerMongo };
