@@ -5,7 +5,7 @@ const asyncHandler = require("express-async-handler");
 exports.addNewCustomer = asyncHandler(async (req, res) => {
     const {email} = req.body;
     console.log(req.body);
-    let existingCustomer = await Customer.findOne({ email: email }).lean().exec();
+    let existingCustomer = await Customer.findOne({ email: email });
     if (existingCustomer) {
       res.send(existingCustomer);
     } else {
